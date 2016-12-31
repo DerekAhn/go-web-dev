@@ -13,7 +13,50 @@
       </button>
     </form>
 
+    <table width="100%">
+      <thead>
+        <tr style="text-align: left;">
+          <th width="30%">Title</th>
+          <th width="20%">Author</th>
+          <th width="20%">Year</th>
+          <th width="20%">ID</th>
+        </tr>
+      </thead>
+      <tbody id="search-results">
+      </tbody>
+    </table>
 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript">
+      function submitSearch() {
+        $.ajax({
+          url: '/search',
+          method: 'POST',
+          data: $('#search-form').serialize(),
+          success(data) {
+            const parsed = JSON.parse(data);
+            if (!parsed) return;
 
+            const searchResults = $('#search-results');
+            searchResults.empty();
+
+            parsed.forEach(result => {
+              const row = $(`
+                <tr>
+                  <td>${result.Title}</td>
+                  <td>${result.Author}</td>
+                  <td>${result.Year}</td>
+                  <td>${result.ID}</td>
+                </tr>
+              `);
+
+              searchResults.append(row);
+            })
+          }
+        })
+
+        return false;
+      }
+    </script>
   </body>
 </html>
