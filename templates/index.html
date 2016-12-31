@@ -6,13 +6,13 @@
     <title></title>
   </head>
   <body>
-    <p>Hello, {{.Name}}</p>
+    <form id="search-form" onsubmit="return false">
+      <input type="text"  name="search"/>
+      <button type="submit" onclick="submitSearch()">
+        Search
+      </button>
+    </form>
 
-    {{if .DBStatus}}
-      <p>The database connection is alive!</p>
-    {{else}}
-      <p>The database connection is dead!</p>
-    {{end}}
 
 
   </body>
