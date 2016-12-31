@@ -6,12 +6,20 @@ import (
 	"net/http"
 
 	"database/sql"
+	"encoding/json"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type Page struct {
 	Name     string
 	DBStatus bool
+}
+
+type SearchResult struct {
+	Title  string
+	Author string
+	Year   string
+	ID     string
 }
 
 func main() {
@@ -33,6 +41,20 @@ func main() {
 		}
 		// To test the conditional in template/index.html
 		// db.Close()
+	})
+
+	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
+		results := []SearchResult{
+			SearchResult{"Moby-Dick", "Herman Melville", "1851", "222222"},
+			SearchResult{"The Adventures of Huckleberry Finn", "Mark Twain", "1884", "444444"},
+			SearchResult{"The Catcher in the Rye", "JD Salinger", "1951", "333333"},
+		}
+
+		encoder := json.NewEncoder(w)
+		if err := encoder.Encode(results); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		db.Close()
 	})
 
 	fmt.Println(http.ListenAndServe(":3000", nil))
