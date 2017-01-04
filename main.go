@@ -94,6 +94,24 @@ func main() {
 
 	mux := gmux.NewRouter()
 
+	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		if r.FormValue("username") != "" || r.FormValue("password") != "" {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
+
+		template, err := ace.Load("templates/login", "", nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err = template.Execute(w, nil); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
+
 	mux.HandleFunc("/books", func(w http.ResponseWriter, r *http.Request) {
 		var b []Book
 		if !getBookCollection(&b, getStringFromSession(r, "SortBy"), r.FormValue("filter"), w) {
