@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -57,8 +56,6 @@ func main() {
 		if err := templates.ExecuteTemplate(w, "index.html", p); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		// To test the conditional in template/index.html
-		// db.Close()
 	})
 
 	mux.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
