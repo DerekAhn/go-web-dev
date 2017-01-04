@@ -57,6 +57,12 @@
               `);
 
               searchResults.append(row);
+              row.on('click', () => {
+                $.ajax({
+                  url: `/books/add?id=${result.ID}`,
+                  method: 'GET'
+                })
+              })
             })
           }
         })
