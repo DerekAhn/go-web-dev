@@ -66,8 +66,8 @@ html
     = javascript
       function deleteBook(pk) {
         $.ajax({
-          method: 'GET',
-          url: `/books/delete?pk=${pk}`,
+          method: 'DELETE',
+          url: `/books/${pk}`,
           success() {
             $(`#book-row-${pk}`).remove();
           }
@@ -108,12 +108,13 @@ html
               searchResults.append(row);
               row.on('click', () => {
                 $.ajax({
-                  url: `/books/add?id=${result.ID}`,
-                  method: 'GET',
+                  url: `/books?id=${result.ID}`,
+                  method: 'PUT',
                   success(_data) {
                     const book = JSON.parse(_data);
+
                     if (!book) return;
-                    console.log(book);
+
                     $('#view-results').append(`<tr id="book-row-${book.PK}">
                       <td>${book.Title}</td>
                       <td>${book.Author}</td>
