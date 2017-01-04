@@ -1,40 +1,29 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>BOOKS</title>
-    <style type="text/css" media="screen">
+= doctype html
+html
+  head
+    title BOOKS
+    = css
       #search-results tr:hover {
         background-color: lightgrey;
         cursor: pointer;
       }
-    </style>
-  </head>
-  <body>
-    <form id="search-form" onsubmit="return false">
-      <input type="text"  name="search"/>
-      <button type="submit" onclick="submitSearch()">
-        Search
-      </button>
-    </form>
 
-    <table width="100%">
-      <thead>
-        <tr style="text-align: left;">
-          <th width="20%">Title</th>
-          <th width="40%">Author</th>
-          <th width="10%">Year</th>
-          <th width="10%">Format</th>
-          <th width="20%">ID</th>
-        </tr>
-      </thead>
-      <tbody id="search-results">
-      </tbody>
-    </table>
+    form id="search-form" onsubmit="return false"
+      input type="text" name="search"
+      button type="submit" onclick="submitSearch()" Search
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript">
+    table width="100%"
+      thead
+        tr style="text-align: left;"
+          th width="20%" Title
+          th width="40%" Author
+          th width="10%" Year
+          th width="10%" Format
+          th width="20%" ID
+      tbody id="search-results"
+
+    script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"
+    = javascript
       function submitSearch() {
         $.ajax({
           url: '/search',
@@ -65,10 +54,7 @@
               })
             })
           }
-        })
+        });
 
         return false;
       }
-    </script>
-  </body>
-</html>
