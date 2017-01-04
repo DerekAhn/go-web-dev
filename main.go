@@ -68,6 +68,17 @@ type ClassifySearchResponse struct {
 	Results []SearchResult `xml:"works>work"`
 }
 
+type ClassifyBookResponse struct {
+	BookData struct {
+		Title  string `xml:"title,attr"`
+		Author string `xml:"author,attr"`
+		ID     string `xml:"owi,attr"`
+	} `xml:"work"`
+	Classification struct {
+		MostPopular string `xml:"sfa,attr"`
+	} `xml:"recommendations>ddc>MostPopular"`
+}
+
 func find(id string) (ClassifyBookResponse, error) {
 	var c ClassifyBookResponse
 
