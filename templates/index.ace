@@ -4,7 +4,8 @@ html
     title BOOKS
     = css
       #search-results tr:hover,
-      #view-results tr:hover {
+      #view-results tr:hover,
+      #view-page th:hover {
         background-color: lightgrey;
         cursor: pointer;
       }
@@ -48,9 +49,9 @@ html
       table width="100%"
         thead
           tr style="text-align: left;"
-            th width="45%" Title
-            th width="35%" Author
-            th width="20%" Classification
+            th width="45%" onclick="sortBooks('title')" Title
+            th width="35%" onclick="sortBooks('author')" Author
+            th width="20%" onclick="sortBooks('classification')" Classification
             th width="5%"
         tbody
           {{range .Books}}
@@ -64,6 +65,36 @@ html
 
     script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"
     = javascript
+      function sortBooks(columnName) {
+        $.ajax({
+          method: 'GET',
+          url: `/books?sortBy=${columnName}`,
+          success(data) {
+            const books = JSON.parse(data);
+            if (!books) return;
+
+            $('#view-results').empty();
+
+            books.forEach(appendBook);
+          }
+        })
+      }
+
+      function appendBook(book) {
+        $('#view-results').append(`
+          <tr id="book-row-${book.PK}">
+            <td>${book.Title}</td>
+            <td>${book.Author}</td>
+            <td>${book.Classification}</td>
+            <td>
+              <button class="delete-btn" onclick="deleteBook(${book.PK})">
+                Delete
+              </button>
+            </td>
+          </tr>
+        `);
+      }
+
       function deleteBook(pk) {
         $.ajax({
           method: 'DELETE',
@@ -114,17 +145,7 @@ html
                     const book = JSON.parse(_data);
 
                     if (!book) return;
-
-                    $('#view-results').append(`<tr id="book-row-${book.PK}">
-                      <td>${book.Title}</td>
-                      <td>${book.Author}</td>
-                      <td>${book.Classification}</td>
-                      <td>
-                        <button class="delete-btn" onclick="deleteBook(${book.PK})">
-                          Delete
-                        </button>
-                      </td>
-                    </tr>`);
+                    appendBook(book);
                   }
                 })
               })
