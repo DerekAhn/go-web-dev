@@ -1,7 +1,6 @@
 = doctype html
 html
   head
-    title BOOKS
     = css
       #search-results tr:hover,
       #view-results tr:hover,
@@ -19,41 +18,50 @@ html
         margin: 1em;
         padding: .3em;
       }
+      #search-page {
+        display: none;
+      }
       .delete-btn {
         color: white;
-          background-color: #d9534f;
-          border-color: #d43f3a;
-          border-radius: 8px;
-        }
+        background-color: #d9534f;
+        border-color: #d43f3a;
+        border-radius: 8px;
+      }
   body
     div#page-switcher
-      button onClick="showViewPage()" View Library
-      button onClick="showSearchPage()" Add Books
+      button#view-library onclick="showViewPage()" View Library
+      button#add-books onclick="showSearchPage()" Add Books
 
-    div#search-page style="display: none;"
+    div#search-page
       form id="search-form" onsubmit="return false"
-        input type="text" name="search"
+        input name="search"
         button type="submit" onclick="submitSearch()" Search
 
       table width="100%"
         thead
           tr style="text-align: left;"
-            th width="20%" Title
-            th width="40%" Author
+            th width="40%" Title
+            th width="30%" Author
             th width="10%" Year
             th width="10%" Format
             th width="20%" ID
         tbody id="search-results"
 
     div#view-page
+      form#filter-view-results style="float: right;"
+        select name="filter" style="font-size: 18px; min-width: 10em;" onchange="filterViewResults()"
+          option value="all" All Books
+          option value="fiction" Fiction
+          option value="nonfiction" Nonfiction
+
       table width="100%"
         thead
           tr style="text-align: left;"
             th width="45%" onclick="sortBooks('title')" Title
             th width="35%" onclick="sortBooks('author')" Author
-            th width="20%" onclick="sortBooks('classification')" Classification
+            th width="15%" onclick="sortBooks('classification')" Classification
             th width="5%"
-        tbody
+        tbody#view-results
           {{range .Books}}
             tr id="book-row-{{.PK}}"
               td {{.Title}}
@@ -65,18 +73,34 @@ html
 
     script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"
     = javascript
+      $(document).ready(function() {
+        const filter = {{.Filter}};
+        $(`#filter-view-results option[value="${filter}"]`).prop("selected", true);
+      });
+
+      function rebuildBookCollection(data) {
+        const books = JSON.parse(data);
+        if (!books) return;
+
+        $('#view-results').empty();
+
+        books.forEach(appendBook);
+      }
+
+      function filterViewResults() {
+        $.ajax({
+          method: 'GET',
+          url: '/books',
+          data: $('#filter-view-results').serialize(),
+          success: rebuildBookCollection
+        })
+      }
+
       function sortBooks(columnName) {
         $.ajax({
           method: 'GET',
           url: `/books?sortBy=${columnName}`,
-          success(data) {
-            const books = JSON.parse(data);
-            if (!books) return;
-
-            $('#view-results').empty();
-
-            books.forEach(appendBook);
-          }
+          success: rebuildBookCollection
         })
       }
 
