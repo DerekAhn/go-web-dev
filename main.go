@@ -105,7 +105,7 @@ type ClassifyBookResponse struct {
 	} `xml:"work"`
 	Classification struct {
 		MostPopular string `xml:"sfa,attr"`
-	} `xml:"recommendations>ddc>MostPopular"`
+	} `xml:"recommendations>ddc>mostPopular"`
 }
 
 func find(id string) (ClassifyBookResponse, error) {
