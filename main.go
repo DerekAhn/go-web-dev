@@ -12,6 +12,7 @@ import (
 	"net/url"
 )
 
+const source string = "http://classify.oclc.org/classify2/Classify?summary=true&"
 type Page struct {
 	Name     string
 	DBStatus bool
@@ -109,9 +110,7 @@ type ClassifyBookResponse struct {
 
 func find(id string) (ClassifyBookResponse, error) {
 	var c ClassifyBookResponse
-
-	source := "http://classify.oclc.org/classify2/Classify?summary=true&owi="
-	body, err := classifyAPI(source + url.QueryEscape(id))
+	body, err := classifyAPI(source + "owi=" + url.QueryEscape(id))
 
 	if err != nil {
 		return ClassifyBookResponse{}, err
@@ -123,9 +122,7 @@ func find(id string) (ClassifyBookResponse, error) {
 
 func search(query string) ([]SearchResult, error) {
 	var c ClassifySearchResponse
-
-	source := "http://classify.oclc.org/classify2/Classify?&summary=true&title="
-	body, err := classifyAPI(source + url.QueryEscape(query))
+	body, err := classifyAPI(source + "title=" + url.QueryEscape(query))
 
 	if err != nil {
 		return []SearchResult{}, err
