@@ -69,21 +69,28 @@ type ClassifySearchResponse struct {
 }
 
 func search(query string) ([]SearchResult, error) {
+	var c ClassifySearchResponse
+
+	source := "http://classify.oclc.org/classify2/Classify?&summary=true&title="
+	body, err := classifyAPI(source + url.QueryEscape(query))
+
+	if err != nil {
+		return []SearchResult{}, err
+	}
+
+	err = xml.Unmarshal(body, &c)
+	return c.Results, err
+}
+
+func classifyAPI(url string) ([]byte, error) {
 	var resp *http.Response
 	var err error
 
-	source := "http://classify.oclc.org/classify2/Classify?&summary=true&title="
-	if resp, err = http.Get(source + url.QueryEscape(query)); err != nil {
-		return []SearchResult{}, err
+	if resp, err = http.Get(url); err != nil {
+		return []byte{}, err
 	}
 
 	defer resp.Body.Close()
-	var body []byte
-	if body, err = ioutil.ReadAll(resp.Body); err != nil {
-		return []SearchResult{}, err
-	}
 
-	var c ClassifySearchResponse
-	err = xml.Unmarshal(body, &c)
-	return c.Results, err
+	return ioutil.ReadAll(resp.Body)
 }
