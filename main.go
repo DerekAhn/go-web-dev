@@ -68,6 +68,20 @@ type ClassifySearchResponse struct {
 	Results []SearchResult `xml:"works>work"`
 }
 
+func find(id string) (ClassifyBookResponse, error) {
+	var c ClassifyBookResponse
+
+	source := "http://classify.oclc.org/classify2/Classify?summary=true&owi="
+	body, err := classifyAPI(source + url.QueryEscape(id))
+
+	if err != nil {
+		return ClassifyBookResponse{}, err
+	}
+
+	err = xml.Unmarshal(body, &c)
+	return c, err
+}
+
 func search(query string) ([]SearchResult, error) {
 	var c ClassifySearchResponse
 
