@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/urfave/negroni"
 	"io/ioutil"
 	"net/url"
 )
@@ -30,8 +31,9 @@ func main() {
 	templates := template.Must(template.ParseFiles("templates/index.html"))
 
 	db, _ := sql.Open("sqlite3", "dev.db")
+	mux := http.NewServeMux()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		p := Page{Name: "Gopher"}
 
 		if name := r.FormValue("name"); name != "" {
@@ -47,7 +49,7 @@ func main() {
 		// db.Close()
 	})
 
-	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		var results []SearchResult
 		var err error
 
@@ -61,7 +63,7 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/books/add", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/books/add", func(w http.ResponseWriter, r *http.Request) {
 		var book ClassifyBookResponse
 		var err error
 
@@ -76,7 +78,10 @@ func main() {
 			nil, book.BookData.Title, book.BookData.Author, book.BookData.ID, book.Classification.MostPopular)
 	})
 
-	fmt.Println(http.ListenAndServe(":3000", nil))
+	n := negroni.Classic()
+	n.Use(negroni.HandlerFunc(verifyDB))
+	n.UseHandler(mux)
+	n.Run(":3000")
 }
 
 type ClassifySearchResponse struct {
