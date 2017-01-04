@@ -22,7 +22,7 @@ html
         label Password
         input type="password" name="password" required=
       div
-        button type="submit" Register
-        button type="submit" Log In
+        input type="submit" name="register" value="Register"
+        input type="submit" name="login" value="Log In"
       #error {{.Error}}
 
